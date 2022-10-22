@@ -1,18 +1,29 @@
 const express     = require('express'),
       mongoose    = require('mongoose'),
-      app         = express()
+      app         = express(),
+      userRouter  = require("./routers/userRouter"),
+      discussionRouter = require("./routers/discussionRouter"),
+      messageRouter = require("./routers/messageRouter"),
+      conversationRouter = require("./routers/conversationRouter"),
+      passport    = require("passport"),
+      bodyParser  = require("body-parser")
+require("./config/passport")
+
+
+if(process.env.NODE_ENV !== "production") 
+{
+  require('dotenv').config();
+}
 
 mongoose.connect(
-  "mongodb+srv://flyts:Samy2205@cluster0.jbgpvup.mongodb.net/?retryWrites=true&w=majority",
+  process.env.DATABASE_ACCESS,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true
   }
 )
 .then(()  => console.log("Connexion à MongoDB réussie !"))
-.catch(() => console.log("Connexion à MongoDB échouée !"))
-
-app.use(express.json())
+.catch(() => console.log("Connexion à MongoDB échouée"))
 
 app.use((req, res, next)=>
 {
@@ -22,7 +33,16 @@ app.use((req, res, next)=>
 
   next()
 })
+app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(passport.initialize())
 
+
+app.use("/api", userRouter)
+// app.use("/api", passport.authenticate("jwt", {session: false}), discussionRouter)
+app.use("/api", discussionRouter)
+app.use("/api", messageRouter)
+app.use("/api", conversationRouter)
 
 
 module.exports = app

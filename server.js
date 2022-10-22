@@ -1,5 +1,6 @@
 const http = require('http')
 const app = require('./app')
+const {Server} = require("socket.io")
 
 function normalizePort(val) 
 {
@@ -17,7 +18,7 @@ function normalizePort(val)
   return false
 }
 
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(process.env.PORT || '5000')
 app.set('port', port)
 
 function errorHandler(error)
@@ -53,5 +54,22 @@ server.on('listening', () =>
   const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port
   console.log('Listening on ' + bind)
 })
+
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+})
+
+io.on("connection", (socket)=>
+{
+  socket.on("sendMessage", (data) => 
+  {
+    socket.broadcast.emit("receiveMessage", {message: data.message})
+  })
+})
+
 
 server.listen(port)
