@@ -1,6 +1,8 @@
 const http = require('http')
 const app = require('./app')
 const {Server} = require("socket.io")
+const { join_or_create_conversation } = require('./socketControllers/conversationSocket')
+const { send_message } = require('./socketControllers/messageSocket')
 
 function normalizePort(val) 
 {
@@ -65,10 +67,8 @@ const io = new Server(server, {
 
 io.on("connection", (socket)=>
 {
-  socket.on("sendMessage", (data) => 
-  {
-    socket.broadcast.emit("receiveMessage", {message: data.message})
-  })
+  join_or_create_conversation(socket)
+  send_message(socket)
 })
 
 
