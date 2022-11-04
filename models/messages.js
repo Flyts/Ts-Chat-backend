@@ -4,13 +4,18 @@ const mongoose = require("mongoose")
 const messageSchema = mongoose.Schema({
     message: {
         type: String,
-        required: true,
+        default: null,
         max: 1000
     },
-    type_message: {
+    type_file: {
         type: String,
-        required: true,
-        max: 6
+        max: 6,
+        default: null
+    },
+    link_file: {
+        type: String,
+        max: 50,
+        default: null
     },
     from: {
         type: String,
