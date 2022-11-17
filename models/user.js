@@ -3,9 +3,15 @@ const mongoose = require("mongoose"),
       
 
 const userSchema = mongoose.Schema({
-    name: {
-        type: Object,
-        required: true
+    nom: {
+        type: String,
+        required: true,
+        max: 50
+    },
+    prenom: {
+        type: String,
+        required: true,
+        max: 50
     },
     email: {
         type: String,
@@ -24,7 +30,7 @@ const userSchema = mongoose.Schema({
     },
     avatar: {
         type: String,
-        default: "https://res.cloudinary.com/drctiml18/image/upload/v1665824059/Ts%20Chat/default_avatar_q4bcab.png",
+        default: "https://res.cloudinary.com/drctiml18/image/upload/v1667578298/homme_ndj2hu.jpg",
         max: 250
     },
     anonyme: {

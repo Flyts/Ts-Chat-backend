@@ -1,4 +1,3 @@
-const { path } = require("../app")
 const User = require("../models/user")
 
 function getFriends(req, res, next)

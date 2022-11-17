@@ -100,66 +100,10 @@ function send_message(socket)
             .upload(file)
             .then((result) => 
             {
-                // const saveMessage = new Message({
-                //     message: message,
-                //     type_file: result.resource_type,
-                //     link_file: result.secure_url,
-                //     from: from,
-                //     to: to,
-                //     conversation_id: conversation_id
-                // })
-        
-                // saveMessage.save()
-                // .then(() => {
-                //     Message.find({
-                //         $or:
-                //         [
-                //             {
-                //                 from: from,
-                //                 to: to
-                //             },
-                //             {
-                //                 from: to,
-                //                 to: from
-                //             }
-                //         ]
-                //     })
-                //     .then((messages) => {
-                //         socket.to(conversation_id).emit("receive_message", 
-                //         {
-                //             success: true,
-                //             message: "Votre message a bien été emit",
-                //             messages,
-                //             conversation_id
-                //         })
-        
-                //         socket.emit("sended_message", 
-                //         {
-                //             status: 201,
-                //             success: true,
-                //             message: "Votre message a bien été envoyé",
-                //             messages,
-                //             sender_id: from,
-                //             conversation_id
-                //         })
-                //     })
-                //     .catch((error) => {
-                //         socket.emit("error_get_messages", 
-                //         {
-                //             success: 500,
-                //             error
-                //         })
-                //     })
-                // })
-                // .catch((error)  => {
-                //     socket.emit("error_sended_message", 
-                //     {
-                //         success: 500,
-                //         error
-                //     })
-                // })
-    
                 save_message(data, result)
+            })
+            .catch((errors) => {
+                console.log(errors)
             })
         }
         else

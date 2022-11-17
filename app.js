@@ -34,7 +34,8 @@ app.use((req, res, next)=>
   next()
 })
 app.use(express.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json({limit: "10mb"}))
+app.use(bodyParser.urlencoded({limit: "10mb", extended: true, parameterLimit:50000}))
 app.use(passport.initialize())
 
 
