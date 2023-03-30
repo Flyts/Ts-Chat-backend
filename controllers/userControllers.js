@@ -3,13 +3,21 @@ const User     = require("../models/user"),
       bcrypt   = require("bcrypt"),
       jwt      = require("jsonwebtoken"),
       {config} = require("../config/config"),
-      { validationResult } = require('express-validator');
+      { validationResult } = require('express-validator'),
+      {io} = require("../server")
 
 const cloudinary = require("cloudinary").v2
 
 
 function register(req, res, next)
 {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+
     bcrypt.hash(req.body.password, 10)
     .then((hash) => 
     {
@@ -39,12 +47,14 @@ function register(req, res, next)
                 success: true,
                 message: "Utilisateur créée avec succès",
                 user: {
-                    id: user._id,
-                    name: user.name,
+                    _id: user._id,
+                    nom: user.nom,
+                    prenom: user.prenom,
                     email: user.email,
                     sexe: user.sexe,
                     avatar: user.avatar,
-                    anonyme: user.anonyme
+                    anonyme: user.anonyme,
+                    desciption: user.desciption
                 }
             })
         })
@@ -52,7 +62,9 @@ function register(req, res, next)
         {
             res.status(500).json({
                 success: false,
-                message: "Quelque chose s'est mal passé",
+                message: [
+                    {msg:"Quelque chose s'est mal passé"}
+                ],
                 error
             })
         })
@@ -60,7 +72,9 @@ function register(req, res, next)
     .catch((error) => {
         res.status(500).json({
             success: false,
-            message: "Quelque chose s'est mal passé",
+            message: [
+                {msg:"Quelque chose s'est mal passé"}
+            ],
             error
         })
     })
@@ -68,6 +82,13 @@ function register(req, res, next)
 
 function login(req, res, next)
 {
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+
     const email    = (req.body.email).toLowerCase()
 
     User.findOne({email: email})
@@ -77,7 +98,9 @@ function login(req, res, next)
         {
             res.status(401).json({
                 success: false,
-                message: "E-mail ou mot de passe incorrect"
+                message: [
+                    {msg: "E-mail ou mot de passe incorrect"}
+                ]
             })
         }
         else
@@ -102,7 +125,8 @@ function login(req, res, next)
                             email: user.email,
                             sexe: user.sexe,
                             avatar: user.avatar,
-                            anonyme: user.anonyme
+                            anonyme: user.anonyme,
+                            description: user.desciption
                         }
                     })
                 }
@@ -110,7 +134,9 @@ function login(req, res, next)
                 {
                     res.status(401).json({
                         success: false,
-                        message: "E-mail ou mot de passe incorrect"
+                        message: [
+                            {msg:"E-mail ou mot de passe incorrect"}
+                        ]
                     })
                 }
             })
@@ -196,10 +222,12 @@ function editAccountImg(req, res, next)
 function editAccountInfo(req, res, next)
 { 
     const errors = validationResult(req)
+
     if (!errors.isEmpty()) 
     {
       return res.status(400).json({ errors: errors.array() })
     }
+
 
     const {id, nom, prenom, description} = req.body
 
@@ -211,11 +239,14 @@ function editAccountInfo(req, res, next)
     }, 
     {returnOriginal: false})
     .then((user) => {
-        res.status(200).json({
-            success: true, 
-            message: "Vos informations ont bien été mis à jour", 
-            user
-        })
+        if(user)
+        {
+            res.status(200).json({
+                success: true, 
+                message: "Vos informations ont bien été mis à jour", 
+                user
+            })
+        }
     })
     .catch((errors) => res.status(500).json({success: false, errors, message: "Error save to database"}))
 }
