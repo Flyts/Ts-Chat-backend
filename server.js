@@ -3,6 +3,7 @@ const app = require('./app')
 const {Server} = require("socket.io")
 const { join_or_create_conversation } = require('./socketControllers/conversationSocket')
 const { send_message } = require('./socketControllers/messageSocket')
+const { emit_user_info } = require('./socketControllers/userSocket')
 
 function normalizePort(val) 
 {
@@ -69,6 +70,7 @@ io.on("connection", (socket) =>
 {
   join_or_create_conversation(socket)
   send_message(socket)
+  emit_user_info(socket)
 })
 
 
